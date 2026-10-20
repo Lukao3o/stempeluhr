@@ -1,0 +1,44 @@
+{
+  "name": "Stempeluhr",
+  "short_name": "Stempeluhr",
+  "description": "Arbeitszeit selbst stempeln: Kommen, Gehen, Kalender und Monatsübersicht.",
+  "lang": "de-CH",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#D9E1D5",
+  "theme_color": "#D9E1D5",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jetzt stempeln",
+      "short_name": "Stempeln",
+      "url": "./?stempeln=1",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

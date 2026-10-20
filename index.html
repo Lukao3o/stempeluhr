@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#D9E1D5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Stempeluhr">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Stempeluhr</title>
+<style>
+@font-face{font-family:"Stempel Dot";src:url(data:font/woff;base64,d09GRgABAAAAAAS8AAoAAAAAFqwAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABZAAAADgAAABgR/zns2NtYXAAAAG4AAAATgAAAGIk5B8zZ2x5ZgAAAiwAAAHsAAATimXU12FoZWFkAAAA9AAAADYAAAA2L2hNNGhoZWEAAAEsAAAAHwAAACQFegHWaG10eAAAAZwAAAAcAAAAQCHOA7xsb2NhAAACCAAAACQAAAAkLQYyPG1heHAAAAFMAAAAFgAAACAAIwDObmFtZQAABBgAAABbAAAAbL9W2uFwb3N0AAAEdAAAAEUAAABiocxukgABAAAAAQAANjMEb18PPPUAAwPoAAAAAOb9BMwAAAAA5v0EzAA2AAQCIgK4AAAAAwACAAAAAAAAeJxjYGRgYFb4b8HAwBTBYMZgxqTEABRBAfwAPaMCVgB4nGNgZGBgEGQ4A8QgwMSABgAXnwDyAAB4nGNgZhJknMDAysDCQAA0MDAwAikHGN8eCICUgpIQs8J/CwYGZgWGEzA5xi9Me0ByDAwA1tAG2nicY4pgYGCCYDMgngWl8WGwGoYTQAyEACSVCad4nGNgYGBiYGBgBmIRIMkIplkY/IA0HwMHUI6NQYFBj8GSwUpBWEno/3+guAKDDoMBjP//IQPD/0v/r9z/dfcXWDcPAwIIAHn8AFHbEE8AAAAAAAAAAAEAAaECfgNcBDoFRQYzBuIH8AjeCRIJZAmKCaAJxXiczZc9TgJREMf/s4ImkviRVSmohMTKROLHUlhYWhsPIAWdB+AAtCQaSiwtPIAhocKGgkRv4AFoOQFxwd1lebuTneW9FYvJmzzeV+Y/v9kBe3CQs8pWHwUUUcEZrnGLezzgEU208IQXvOEdH4B9fnR4sFkpn1xdOheMnw/5x2ua5942sksl27WmMk7HnkOv/kzL0MyYudLqz4cYa/zJhG/ANrrI0YDRHxSK3xYT12JKnzsn7NOp98g7JXJJpq6PRpyPjsSJRnBHRJAWPVz0JD53lz4lasi5UT3JBAyrSBWRzqBynM+pwrGhU98awngn6WOkjhlRTp86Sf3i5nW0kORDWHd6ZkTpeeN3BMObJHE43X2TlMT00iQLj31xz/GpR1+eibZk7zoJDQi0hRtsdWO26K4AeTLSu8KsWGI6ba1NmzWmes+gn1G5VqFkU0LSpMq1XuGzqdNmFhK01aI8bXfEkS2l0zeu31Eto49khvU0CwL+3T86DhbDpBnAR4c8cVVdV16kJTlz/TnMe8rvmUgtwD2QFhvoUpUG1Pa0FWnIxYzabA7l4VDVKgf3zHJIq2JLKy3/psgbLTfPv9ChyfyNS6+Lq/G+0cR3R4u40owZdFB3z0ItZnd9sdby1g5/760J7x1GZP0B3UOkgHicLYixDYAgFAUPJDHGxMLCmtIJnIAJZAIKYoOBENzfj/EVl3cHGA4UfYr5Y59mFBtQZpKysf5fs7D7Fu8Sk3W5nfF6Uqh4GpGbIkxYHFnKKXbxSAnUF/mpDsYAeJx9yUcRgFAQBNGd/mQOgAA8kIOfUYhCUEBXvVMH8d/wSUJJmXIVKlWpVqM2+nhi/H6HJzzjBa94wzs+8IkvfL+S9QdqAAAA) format("woff");font-display:block;unicode-range:U+0020,U+002C-003A,U+2013,U+2212}
+/* Layout: Phone = eine Ansicht + Tab-Leiste unten (iOS-Muster); breit = Kalender als Sidebar links, Heute + Monat rechts.
+   Material: Stempelkarte – Salbei-Karton, Zeiten in Punktmatrix-Tinte (blau = Kommen, rot = Gehen). */
+:root{
+  --bg:#D9E1D5; --card:#F3F6F0; --card-2:#E6ECE2; --ink:#1B2331; --muted:#596659; --rule:rgba(27,35,49,.12);
+  --in:#2C3D9C; --out:#BF352B; --in-wash:rgba(44,61,156,.10); --out-wash:rgba(191,53,43,.10);
+  --warn:#9A5207; --on-accent:#F6F8F4; --tab-bg:rgba(243,246,240,.88); --scrim:rgba(14,20,17,.38);
+  --shadow:0 1px 0 rgba(27,35,49,.05),0 10px 28px -16px rgba(27,35,49,.38);
+  --f-ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --f-dot:"Stempel Dot",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --tab-h:58px; --radius:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1311; --card:#1A201C; --card-2:#232B26; --ink:#E5EAE3; --muted:#94A196; --rule:rgba(229,234,227,.11);
+  --in:#97A3FF; --out:#FF7D6E; --in-wash:rgba(151,163,255,.13); --out-wash:rgba(255,125,110,.13);
+  --warn:#F2A74C; --on-accent:#0F1311; --tab-bg:rgba(26,32,28,.88); --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 0 rgba(0,0,0,.35),0 10px 28px -16px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1311; --card:#1A201C; --card-2:#232B26; --ink:#E5EAE3; --muted:#94A196; --rule:rgba(229,234,227,.11);
+  --in:#97A3FF; --out:#FF7D6E; --in-wash:rgba(151,163,255,.13); --out-wash:rgba(255,125,110,.13);
+  --warn:#F2A74C; --on-accent:#0F1311; --tab-bg:rgba(26,32,28,.88); --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 0 rgba(0,0,0,.35),0 10px 28px -16px rgba(0,0,0,.8); color-scheme:dark}
+
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body.locked{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--in);outline-offset:2px}
+.t{font-family:var(--f-dot);line-height:1;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.warn{color:var(--out);font-weight:600}
+
+/* ---------- Gerüst ---------- */
+.banner-wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 0}
+.banner{max-width:1180px;margin:0 auto;background:var(--out-wash);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:500}
+.views{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:4px calc(var(--tab-h) + 32px + env(safe-area-inset-bottom,0px))}
+.view{display:none;min-width:0}
+.view.on{display:block}
+.nav{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:14px;margin-bottom:14px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.02em;margin:2px 0 0;text-wrap:balance}
+h2{font-size:20px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:30px 0 10px;text-wrap:balance}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+.monthnav{display:flex;gap:8px;flex:none}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:0;background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);padding:0}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn[disabled]{opacity:.35;cursor:default}
+.btn-text{border:0;background:none;color:var(--in);font-weight:600;font-size:16px;padding:8px 2px;cursor:pointer}
+
+/* ---------- Heute ---------- */
+.clock{font-family:var(--f-dot);font-size:clamp(64px,21vw,104px);line-height:1;text-align:center;margin:6px 0 10px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock .sec{font-size:.4em;color:var(--muted);margin-left:.1em}
+.status{text-align:center;color:var(--muted);margin:0 0 22px;min-height:1.4em}
+.status b{color:var(--ink);font-weight:600}
+.stamp-wrap{display:grid;place-items:center;margin:0 0 28px;position:relative}
+.stamp,.ink-ring{width:min(60vw,228px);aspect-ratio:1;max-width:100%;border-radius:50%}
+.stamp{--c:var(--in);border:0;background:var(--c);color:var(--on-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;box-shadow:0 16px 30px -16px var(--c),inset 0 -6px 0 rgba(0,0,0,.14);transition:transform .12s ease,box-shadow .12s ease,background-color .25s ease;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.stamp::before{content:"";position:absolute;inset:12px;border-radius:50%;border:2px dashed currentColor;opacity:.42}
+.stamp.out{--c:var(--out)}
+.stamp:active{transform:scale(.965);box-shadow:0 6px 16px -10px var(--c),inset 0 -2px 0 rgba(0,0,0,.14)}
+.stamp:focus-visible{outline:3px solid var(--ink);outline-offset:5px}
+.stamp[disabled]{--c:var(--muted);cursor:default;opacity:.5}
+.stamp-verb{font-size:23px;font-weight:700;letter-spacing:-.01em}
+.stamp-sub{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;opacity:.86}
+.ink-ring{position:absolute;pointer-events:none;border:3px solid var(--c);animation:ink .75s ease-out forwards}
+@keyframes ink{from{transform:scale(1);opacity:.7}to{transform:scale(1.38);opacity:0}}
+
+.tc{padding:14px 16px 10px}
+.tc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
+.tc-title{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.tc-meta{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tc-cols,.tc-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.85fr);align-items:center;gap:8px}
+.tc-cols{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 0 6px;border-bottom:1px solid var(--rule)}
+.tc-cols span:last-child,.tc-row .dur{text-align:right}
+.tc-row{padding:11px 0;border-bottom:1px solid var(--rule)}
+.tc-row .lbl{font-size:14px;font-weight:600;white-space:nowrap}
+.tc-row .t{font-size:22px;white-space:nowrap}
+.t.in{color:var(--in)} .t.out{color:var(--out)} .t.empty{color:var(--muted);opacity:.4}
+.mk{font-family:var(--f-ui);font-size:11px;color:var(--warn);margin-left:2px;vertical-align:top}
+.dur{font-weight:600;font-variant-numeric:tabular-nums;font-size:15px}
+.tc-pause{display:flex;justify-content:space-between;gap:8px;padding:7px 0;font-size:13px;color:var(--muted);border-bottom:1px solid var(--rule)}
+.tc-pause b{font-weight:600;font-variant-numeric:tabular-nums}
+.tc-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:10px}
+.tc-total{display:flex;align-items:baseline;gap:8px}
+.tc-total .l{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tc-total .t{font-size:30px}
+.unit{font-size:15px;font-weight:600;color:var(--muted)}
+.weekline{text-align:center;color:var(--muted);font-size:14px;margin:14px 0 0}
+.weekline b{color:var(--ink);font-variant-numeric:tabular-nums}
+@keyframes stampin{0%{opacity:0;transform:scale(1.35)}60%{opacity:1;transform:scale(.96)}100%{transform:scale(1)}}
+.t.fresh{display:inline-block;animation:stampin .45s ease-out}
+
+/* ---------- Kalender ---------- */
+.cal{padding:12px 10px 10px}
+.cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-head span{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:center;padding:2px 0 8px}
+.cal-day{aspect-ratio:1/1.15;border:0;border-radius:10px;background:transparent;padding:6px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;cursor:pointer;position:relative;min-width:0}
+.cal-day .n{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.cal-day .h{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--in);min-height:1.2em;white-space:nowrap}
+.cal-day.worked{background:var(--in-wash)}
+.cal-day.other{opacity:.38}
+.cal-day.today{box-shadow:inset 0 0 0 2px var(--ink)}
+.cal-day[disabled]{cursor:default;opacity:.32}
+.cal-day.missing::after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--out)}
+.cal-day.manual::before{content:"";position:absolute;top:4px;left:4px;width:5px;height:5px;border-radius:50%;border:1.5px solid var(--warn)}
+.cal-day .h.warn{color:var(--out)}
+.cal-sum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:14px 4px 0;font-size:15px}
+.cal-sum b{font-size:17px;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:12px 4px 0;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.legend .lm{background:var(--out)} .legend .lr{border:1.5px solid var(--warn);width:6px;height:6px} .legend .lw{background:var(--in-wash);border-radius:3px;width:12px;height:10px}
+.to-month{display:block;margin:10px auto 0}
+
+/* ---------- Monat ---------- */
+.hero{padding:18px 18px 16px}
+.hero .l{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hero .big{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.hero .big .t{font-size:clamp(54px,16vw,76px)}
+.hero .big .unit{font-size:18px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.kpi .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .l2{font-size:12px;color:var(--muted);margin-top:2px}
+.chip-warn{display:inline-flex;align-items:center;gap:8px;background:var(--out-wash);color:var(--out);font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;border:0;cursor:pointer;margin-top:14px}
+.chip-warn::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.weeks{padding:4px 16px}
+.wk{display:grid;grid-template-columns:minmax(0,6.5em) minmax(0,1fr) 3.6em;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--rule)}
+.wk:last-child{border-bottom:0}
+.wk b{display:block;font-size:14px}
+.wk small{display:block;font-size:12px;color:var(--muted);white-space:nowrap}
+.bar{height:10px;border-radius:5px;background:var(--card-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--in);border-radius:5px;min-width:2px}
+.wk .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.days{padding:0 16px}
+.dl{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:12px 0;border-bottom:1px solid var(--rule);cursor:pointer}
+.days .dl:last-child{border-bottom:0}
+.dl-date b{display:block;font-size:20px;line-height:1.05;font-variant-numeric:tabular-nums}
+.dl-date small{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.dl-pairs{display:flex;flex-wrap:wrap;gap:4px 14px}
+.dl-pair{white-space:nowrap}
+.dl-pair .t{font-size:17px}
+.dl-pair .sep{color:var(--muted);margin:0 3px}
+.dl-sub{display:block;font-size:12px;color:var(--muted);margin-top:5px}
+.dl-tot{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+.empty-card{padding:22px 18px;color:var(--muted)}
+.empty-card b{color:var(--ink);display:block;margin-bottom:4px}
+.list{padding:0 16px}
+.li{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;padding:13px 0;border-bottom:1px solid var(--rule);text-align:left;cursor:pointer}
+.list .li:last-child{border-bottom:0}
+.li span{display:block;font-weight:600}
+.li small{display:block;font-size:13px;color:var(--muted);margin-top:1px}
+.li svg{width:18px;height:18px;color:var(--muted);flex:none}
+.foot-note{font-size:13px;color:var(--muted);margin:12px 4px 0;max-width:62ch}
+
+/* ---------- Tab-Leiste ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));background:var(--tab-bg);-webkit-backdrop-filter:saturate(1.4) blur(18px);backdrop-filter:saturate(1.4) blur(18px);border-top:1px solid var(--rule)}
+.tab{border:0;background:none;color:var(--muted);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;cursor:pointer;min-height:46px}
+.tab svg{width:26px;height:26px}
+.tab[aria-selected="true"]{color:var(--in)}
+
+/* ---------- Tag bearbeiten (Sheet) ---------- */
+.backdrop{position:fixed;inset:0;background:var(--scrim);z-index:30;animation:fade .2s ease-out}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;margin:0 auto;max-width:600px;background:var(--card);border-radius:20px 20px 0 0;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:8px calc(22px + env(safe-area-inset-bottom,0px));animation:up .28s cubic-bezier(.2,.8,.2,1);box-shadow:0 -10px 40px -20px rgba(0,0,0,.4)}
+.grab{width:38px;height:5px;border-radius:3px;background:var(--rule);margin:2px auto 10px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sheet-head h2{margin:2px 0 0;font-size:22px}
+.ed{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.ed label{font-weight:600;font-size:15px}
+.ed label small{display:block;font-size:12px;color:var(--warn);font-weight:600}
+.ed input{-webkit-appearance:none;appearance:none;font-family:var(--f-dot);font-size:22px;color:var(--in);background:var(--card-2);border:0;border-radius:10px;padding:8px 10px;width:6.4em;min-height:44px;text-align:center}
+.ed input::-webkit-date-and-time-value{text-align:center}
+.ed.out input{color:var(--out)}
+.del{min-width:40px;height:40px;border-radius:20px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
+.del svg{width:20px;height:20px}
+.del.armed{background:var(--out);color:var(--on-accent);padding:0 12px;font-weight:700;font-size:14px}
+.ed-empty{color:var(--muted);margin:14px 0 4px}
+.ed-warn{background:var(--out-wash);color:var(--out);font-weight:600;font-size:14px;border-radius:10px;padding:9px 12px;margin:12px 0 0}
+.add{width:100%;border:1.5px dashed var(--rule);background:transparent;color:var(--in);font-weight:600;border-radius:12px;padding:12px;margin-top:14px;cursor:pointer}
+.note-l{display:block;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:20px 0 6px}
+.note{display:block;width:100%;box-sizing:border-box;min-height:84px;border:0;border-radius:12px;background:var(--card-2);color:var(--ink);font:inherit;font-size:16px;padding:10px 12px;resize:vertical}
+.sheet-total{display:flex;justify-content:space-between;gap:12px;margin-top:16px;font-size:15px;color:var(--muted)}
+.sheet-total b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 18px + env(safe-area-inset-bottom,0px));z-index:40;transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:14px;padding:11px 12px 11px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px -12px rgba(0,0,0,.5);width:max-content;max-width:calc(100vw - 32px);font-size:15px;font-weight:500}
+.toast.show{animation:toastin .22s ease-out}
+.toast button{border:0;background:transparent;color:var(--bg);font-weight:700;padding:4px 6px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;flex:none}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-48%) scale(.98)}to{opacity:1;transform:translate(-50%,-50%)}}
+
+/* ---------- Breit: Sidebar ---------- */
+@media (min-width:900px){
+  .views{max-width:1180px;display:grid;grid-template-columns:minmax(330px,390px) minmax(0,1fr);grid-template-areas:"cal today" "cal month";column-gap:44px;align-items:start;padding-block:12px 56px}
+  .view{display:block}
+  .v-cal{grid-area:cal;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+  .v-today{grid-area:today;max-width:620px}
+  .v-month{grid-area:month;max-width:620px;margin-top:22px}
+  .v-month .monthnav,.to-month{display:none}
+  .tabbar{display:none}
+  .toast{bottom:28px}
+  .sheet{bottom:auto;top:50%;left:50%;right:auto;width:min(520px,calc(100vw - 48px));transform:translate(-50%,-50%);border-radius:20px;animation:pop .2s ease-out;max-height:86vh}
+  .grab{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="banner-wrap" id="bannerWrap" hidden><div class="banner" id="banner" role="status"></div></div>
+
+<main class="views">
+  <!-- HEUTE -->
+  <section class="view v-today on" data-view="today" aria-labelledby="hToday">
+    <header class="nav">
+      <div>
+        <div class="eyebrow" id="todayDate">&nbsp;</div>
+        <h1 id="hToday">Heute</h1>
+      </div>
+    </header>
+    <div class="clock" aria-hidden="true"><span id="clockHM">--:--</span><span class="sec" id="clockS">:--</span></div>
+    <p class="status" id="status" aria-live="polite">&nbsp;</p>
+    <div class="stamp-wrap" id="stampWrap">
+      <button class="stamp" id="stampBtn" type="button" disabled>
+        <span class="stamp-verb" id="stampVerb">Bitte warten</span>
+        <span class="stamp-sub" id="stampSub">…</span>
+      </button>
+    </div>
+    <article class="card tc" id="todayCard" aria-label="Stempelkarte heute"></article>
+    <p class="weekline" id="weekLine"></p>
+  </section>
+
+  <!-- KALENDER -->
+  <section class="view v-cal" data-view="cal" aria-labelledby="calTitle">
+    <header class="nav">
+      <div>
+        <div class="eyebrow">Verlauf</div>
+        <h1 id="calTitle">&nbsp;</h1>
+      </div>
+      <div class="monthnav">
+        <button class="icon-btn" type="button" data-mnav="-1" aria-label="Vorheriger Monat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="icon-btn" type="button" data-mnav="1" aria-label="Nächster Monat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </header>
+    <div class="card cal">
+      <div class="cal-head" aria-hidden="true"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="cal-sum" id="calSum"></div>
+    <div class="legend"><span><i class="lw"></i>gearbeitet</span><span><i class="lm"></i>Ausstempeln fehlt</span><span><i class="lr"></i>nachgetragen</span></div>
+    <button class="btn-text to-month" type="button" data-tab="month">Zur Monatsübersicht</button>
+  </section>
+
+  <!-- MONAT -->
+  <section class="view v-month" data-view="month" aria-labelledby="monTitle">
+    <header class="nav">
+      <div>
+        <div class="eyebrow">Monatsübersicht</div>
+        <h1 id="monTitle">&nbsp;</h1>
+      </div>
+      <div class="monthnav">
+        <button class="icon-btn" type="button" data-mnav="-1" aria-label="Vorheriger Monat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="icon-btn" type="button" data-mnav="1" aria-label="Nächster Monat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </header>
+    <div id="monBody"></div>
+    <h2>Daten</h2>
+    <div class="card list">
+      <button class="li" type="button" id="expCsv"><div><span>Monat als CSV exportieren</span><small id="expCsvSub">Für Excel oder Numbers</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg></button>
+      <button class="li" type="button" id="expJson"><div><span>Backup sichern</span><small>Alle Stempel als Datei (JSON)</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg></button>
+      <button class="li" type="button" id="impJson"><div><span>Backup laden</span><small>Fügt fehlende Stempel hinzu, überschreibt nichts</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19.5h14"/></svg></button>
+    </div>
+    <p class="foot-note" id="storeNote"></p>
+  </section>
+</main>
+
+<nav class="tabbar" role="tablist" aria-label="Ansicht">
+  <button class="tab" type="button" role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 2M9.5 3h5M12 3v3"/></svg>Stempeln</button>
+  <button class="tab" type="button" role="tab" data-tab="cal" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Kalender</button>
+  <button class="tab" type="button" role="tab" data-tab="month" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 20v-8M12 20V5M18.5 20v-5"/></svg>Monat</button>
+</nav>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <div>
+      <div class="eyebrow" id="sheetEyebrow"></div>
+      <h2 id="sheetTitle"></h2>
+    </div>
+    <button class="btn-text" type="button" id="sheetDone">Fertig</button>
+  </div>
+  <div id="sheetList"></div>
+  <button class="add" type="button" id="addStamp">Stempel nachtragen</button>
+  <label class="note-l" for="dayNote">Notiz</label>
+  <textarea class="note" id="dayNote" maxlength="2000" placeholder="z.B. Scanner zeigt 08:15 statt 08:02"></textarea>
+  <div class="sheet-total" id="sheetTotal"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+(() => {
+'use strict';
+const CUTOFF_H = 4;                 // Tageswechsel 04:00 – Stempel bis 03:59 zählen zum Vortag
+const LS_DATA = 'stempeluhr.v1';
+const LS_UI = 'stempeluhr.ui';
+const KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const pad = n => String(n).padStart(2, '0');
+const WD = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const WD_L = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const MON = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MON_S = ['Jan.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sept.','Okt.','Nov.','Dez.'];
+const TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12.5A1.5 1.5 0 0 0 8.5 21h7a1.5 1.5 0 0 0 1.5-1.5L18 7M9 7V4.5h6V7"/></svg>';
+
+/* ---------- Zeit-Helfer ---------- */
+const keyOf = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const workdayKey = ms => keyOf(new Date(ms - CUTOFF_H * 3600000));
+const dateOf = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const hhmm = ms => { const d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const fmtDur = ms => { const m = Math.max(0, Math.floor(ms / 60000)); return Math.floor(m / 60) + ':' + pad(m % 60); };
+const decH = ms => (Math.floor(Math.max(0, ms) / 60000) / 60).toFixed(2);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const label = i => (i % 2 ? 'Ende' : 'Start') + ' Schicht ' + (Math.floor(i / 2) + 1);
+const longDate = k => { const d = dateOf(k); return WD_L[d.getDay()] + ', ' + d.getDate() + '. ' + MON[d.getMonth()]; };
+const shortDate = k => { const d = dateOf(k); return WD[d.getDay()] + ' ' + d.getDate() + '. ' + MON_S[d.getMonth()]; };
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.ceil(((t - y0) / 86400000 + 1) / 7);
+}
+function msAt(k, hm) {                // "HH:MM" am Arbeitstag k → Zeitstempel
+  const [h, m] = hm.split(':').map(Number);
+  const d = dateOf(k);
+  if (h < CUTOFF_H) d.setDate(d.getDate() + 1);
+  d.setHours(h, m, 0, 0);
+  return d.getTime();
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- Zustand ---------- */
+const now0 = new Date();
+const S = {
+  mode: 'init',            // init | connecting | cloud | local
+  loaded: false,
+  days: {},                // 'YYYY-MM-DD' → {stamps:[{t, m?}], note}
+  db: null, uid: null, dl: null,
+  pending: {}, failed: new Set(), cloudErr: null, snapDead: false,
+  localWarn: false,
+  tab: 'today',
+  vm: { y: now0.getFullYear(), m: now0.getMonth() },
+  sheetKey: null,
+  fresh: null,
+};
+
+function norm(o) {
+  const src = o && Array.isArray(o.stamps) ? o.stamps : [];
+  const stamps = src
+    .filter(s => s && typeof s.t === 'number' && isFinite(s.t))
+    .map(s => s.m ? { t: s.t, m: 1 } : { t: s.t })
+    .sort((a, b) => a.t - b.t);
+  return { stamps, note: o && typeof o.note === 'string' ? o.note.slice(0, 2000) : '' };
+}
+const getDay = k => S.days[k] || { stamps: [], note: '' };
+
+function putDay(k, day, opts = {}) {
+  day = norm(day);
+  const empty = !day.stamps.length && !day.note.trim();
+  if (empty) delete S.days[k]; else S.days[k] = day;
+  let p = Promise.resolve();
+  if (S.mode === 'cloud') p = queueCloud(k, empty ? null : day);
+  else saveLocal();
+  if (!opts.quiet) render();
+  return p;
+}
+
+/* ---------- Speicher: dieses Gerät ---------- */
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LS_DATA);
+    if (raw) {
+      const d = (JSON.parse(raw) || {}).days || {};
+      for (const k in d) if (KEY_RE.test(k)) S.days[k] = norm(d[k]);
+    }
+    localStorage.setItem(LS_DATA + '.probe', '1'); localStorage.removeItem(LS_DATA + '.probe');
+  } catch (e) { S.localWarn = true; }
+}
+function saveLocal() {
+  try { localStorage.setItem(LS_DATA, JSON.stringify({ v: 1, saved: Date.now(), days: S.days })); S.localWarn = false; }
+  catch (e) { S.localWarn = true; }
+  renderBanner();
+}
+function requestPersist() {
+  try { if (S.mode === 'local' && navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+}
+
+/* ---------- Speicher: Claude-Konto (db) ---------- */
+const chains = {};
+const pendKey = () => 'stempeluhr.pending.' + S.uid;
+function savePending() { try { localStorage.setItem(pendKey(), JSON.stringify(S.pending)); } catch (e) {} }
+function queueCloud(k, day) {
+  S.pending[k] = day ? day : { del: true };
+  savePending();
+  const run = () => writeCloud(k);
+  return (chains[k] = (chains[k] || Promise.resolve()).then(run, run));
+}
+async function writeCloud(k) {
+  const want = S.pending[k];
+  if (!want) return;
+  const ref = S.db.doc('data/users/' + S.uid + '/' + k);
+  const go = () => want.del ? ref.delete() : ref.set({ stamps: want.stamps, note: want.note, updated: Date.now() });
+  try { await go(); }
+  catch (e) {
+    const c = e && e.code;
+    if (c === 'unavailable' || c === 'resource_exhausted') {
+      await sleep(700 + Math.random() * 900);
+      try { await go(); } catch (e2) { return markFailed(k, e2); }
+    } else return markFailed(k, e);
+  }
+  if (S.pending[k] === want) { delete S.pending[k]; savePending(); }
+  if (S.failed.delete(k)) renderBanner();
+}
+function markFailed(k, e) { S.failed.add(k); S.cloudErr = (e && e.code) || 'unavailable'; renderBanner(); }
+function retryFailed() {
+  if (S.mode !== 'cloud') return;
+  for (const k of [...S.failed]) {
+    const p = S.pending[k];
+    if (p) queueCloud(k, p.del ? null : p); else S.failed.delete(k);
+  }
+}
+setInterval(retryFailed, 20000);
+window.addEventListener('online', retryFailed);
+
+function subscribe() {
+  S.snapDead = false;
+  S.db.collection('data/users/' + S.uid).onSnapshot(onSnap, e => {
+    S.cloudErr = (e && e.code) || 'unavailable'; S.snapDead = true; renderBanner();
+    if (S.cloudErr === 'unavailable') setTimeout(subscribe, 5000);
+  });
+}
+function onSnap(snap) {
+  const next = {};
+  for (const d of snap.docs) {
+    if (!KEY_RE.test(d.id)) continue;
+    const v = d.data(); if (v) next[d.id] = norm(v);
+  }
+  for (const k in S.pending) { const p = S.pending[k]; if (p.del) delete next[k]; else next[k] = norm(p); }
+  S.days = next; S.snapDead = false;
+  const first = !S.loaded; S.loaded = true;
+  render();
+  if (first) afterLoad();
+}
+
+/* ---------- Start ---------- */
+async function init() {
+  try { const ui = JSON.parse(localStorage.getItem(LS_UI) || '{}'); if (['today','cal','month'].includes(ui.tab)) S.tab = ui.tab; } catch (e) {}
+  render(); tick();
+  const C = window.claude;
+  if (C && typeof C.use === 'function') {
+    S.mode = 'connecting'; render();
+    let db = null, user = null, uid = null;
+    try { [db, user] = await Promise.all([C.use('db'), C.use('user')]); } catch (e) {}
+    if (db && user && typeof user.id === 'function') { try { uid = await user.id(); } catch (e) {} }
+    C.use('downloads').then(d => { S.dl = d; }).catch(() => {});
+    if (db && uid) {
+      S.mode = 'cloud'; S.db = db; S.uid = uid;
+      try {
+        const p = JSON.parse(localStorage.getItem(pendKey()) || '{}');
+        if (p && typeof p === 'object') for (const k in p) if (KEY_RE.test(k)) S.pending[k] = p[k];
+      } catch (e) {}
+      subscribe();
+      for (const k of Object.keys(S.pending)) { const p = S.pending[k]; queueCloud(k, p.del ? null : p); }
+      render();
+      return;
+    }
+  }
+  S.mode = 'local'; loadLocal(); S.loaded = true; render(); afterLoad();
+}
+function afterLoad() {
+  try {                                 // App-Shortcut (Android): ?stempeln=1
+    const u = new URL(location.href);
+    if (u.searchParams.get('stempeln') === '1') {
+      u.searchParams.delete('stempeln');
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+      doStamp(true);
+    }
+  } catch (e) {}
+}
+
+/* ---------- Auswertung ---------- */
+function info(k, now) {
+  const day = getDay(k), st = day.stamps, cur = workdayKey(now);
+  const pairs = []; let done = 0, runFrom = null;
+  for (let i = 0; i < st.length; i += 2) {
+    const a = st[i], b = st[i + 1] || null;
+    pairs.push({ a, b, i });
+    if (b) done += b.t - a.t; else if (k === cur) runFrom = a.t;
+  }
+  let pause = 0;
+  for (let j = 1; j < pairs.length; j++) if (pairs[j - 1].b) pause += pairs[j].a.t - pairs[j - 1].b.t;
+  const open = st.length % 2 === 1;
+  return { k, day, st, pairs, done, runFrom, pause, open, missing: open && k !== cur,
+           total: done + (runFrom ? now - runFrom : 0), manual: st.some(s => s.m) };
+}
+function monthStats(y, m, now) {
+  const prefix = y + '-' + pad(m + 1) + '-';
+  const infos = Object.keys(S.days).filter(k => k.startsWith(prefix)).sort().map(k => info(k, now));
+  const worked = infos.filter(i => i.total > 0);
+  const total = worked.reduce((s, i) => s + i.total, 0);
+  const running = infos.find(i => i.runFrom) || null;
+  const longest = worked.reduce((a, i) => (!a || i.total > a.total) ? i : a, null);
+  const missing = infos.filter(i => i.missing);
+  const weeks = []; const byKey = {};
+  infos.forEach(i => { byKey[i.k] = i; });
+  const dim = new Date(y, m + 1, 0).getDate();
+  for (let d = 1; d <= dim; d++) {
+    const date = new Date(y, m, d), kw = isoWeek(date);
+    let w = weeks[weeks.length - 1];
+    if (!w || w.kw !== kw) { w = { kw, from: d, to: d, total: 0, days: 0 }; weeks.push(w); }
+    w.to = d;
+    const i = byKey[keyOf(date)];
+    if (i && i.total > 0) { w.total += i.total; w.days++; }
+  }
+  return { infos, worked, total, running, longest, missing, weeks, avg: worked.length ? total / worked.length : 0 };
+}
+const runAttr = (runFrom, base) => runFrom ? ` data-run="${runFrom}" data-base="${base}"` : '';
+
+/* ---------- Darstellung ---------- */
+function render() {
+  const now = Date.now();
+  renderToday(now); renderCal(now); renderMonth(now); renderTabs(); renderBanner();
+  if (S.sheetKey && !sheetHasFocus()) renderSheet(now);
+}
+
+function renderToday(now) {
+  const k = workdayKey(now), inf = info(k, now), n = inf.st.length;
+  $('#todayDate').textContent = longDate(k) + (keyOf(new Date(now)) !== k ? ' · Nachtschicht' : '');
+  let st;
+  if (!S.loaded) st = S.mode === 'connecting' ? 'Verbinde mit deinem Speicher …' : 'Lade …';
+  else if (!n) st = 'Noch nicht eingestempelt.';
+  else if (inf.open) st = 'Eingestempelt seit <b>' + hhmm(inf.st[n - 1].t) + '</b> · Schicht ' + Math.ceil(n / 2) + ' läuft';
+  else if (n === 2) st = 'Zimmerstunde seit <b>' + hhmm(inf.st[n - 1].t) + '</b>';
+  else st = 'Feierabend seit <b>' + hhmm(inf.st[n - 1].t) + '</b>';
+  $('#status').innerHTML = st;
+
+  const btn = $('#stampBtn'), out = n % 2 === 1;
+  btn.disabled = !S.loaded;
+  btn.classList.toggle('out', out && S.loaded);
+  $('#stampVerb').textContent = !S.loaded ? 'Bitte warten' : out ? 'Ausstempeln' : 'Einstempeln';
+  $('#stampSub').textContent = S.loaded ? label(n) : '…';
+
+  $('#todayCard').innerHTML = cardHTML(inf, now, k === workdayKey(now));
+
+  const d = dateOf(k), back = (d.getDay() + 6) % 7;
+  let wDone = 0, wRun = null, wDays = 0;
+  for (let i = 0; i < 7; i++) {
+    const wi = info(keyOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() - back + i)), now);
+    wDone += wi.done; if (wi.runFrom) wRun = wi.runFrom; if (wi.total > 0) wDays++;
+  }
+  const wTot = wDone + (wRun ? now - wRun : 0);
+  $('#weekLine').innerHTML = `Diese Woche (KW ${isoWeek(d)}): <b${runAttr(wRun, wDone)}>${fmtDur(wTot)}</b> h an ${wDays} ${wDays === 1 ? 'Tag' : 'Tagen'}`;
+}
+
+function cardHTML(inf, now, isToday) {
+  const fresh = t => S.fresh === t ? ' fresh' : '';
+  const mark = s => s.m ? '<span class="mk" title="nachgetragen">✎</span>' : '';
+  let rows = '';
+  const list = inf.pairs.slice();
+  if (isToday) { if (!list.length) list.push(null, null); else if (list.length === 1 && !inf.open) list.push(null); }
+  list.forEach((p, j) => {
+    const prev = j > 0 ? list[j - 1] : null;
+    if (prev && prev.b) {
+      if (p) rows += `<div class="tc-pause"><span>Zimmerstunde</span><b>${fmtDur(p.a.t - prev.b.t)}</b></div>`;
+      else if (isToday) rows += `<div class="tc-pause"><span>Zimmerstunde läuft</span><b${runAttr(prev.b.t, 0)}>${fmtDur(now - prev.b.t)}</b></div>`;
+    }
+    if (!p) {
+      rows += `<div class="tc-row"><span class="lbl">Schicht ${j + 1}</span><span class="t empty">--:--</span><span class="t empty">--:--</span><span class="dur muted">–</span></div>`;
+      return;
+    }
+    let dur;
+    if (p.b) dur = fmtDur(p.b.t - p.a.t);
+    else if (inf.runFrom === p.a.t) dur = `<span${runAttr(p.a.t, 0)}>${fmtDur(now - p.a.t)}</span>`;
+    else dur = '<span class="warn">offen</span>';
+    rows += `<div class="tc-row"><span class="lbl">Schicht ${j + 1}</span>`
+      + `<span><span class="t in${fresh(p.a.t)}">${hhmm(p.a.t)}</span>${mark(p.a)}</span>`
+      + (p.b ? `<span><span class="t out${fresh(p.b.t)}">${hhmm(p.b.t)}</span>${mark(p.b)}</span>` : '<span class="t empty">--:--</span>')
+      + `<span class="dur">${dur}</span></div>`;
+  });
+  const d = dateOf(inf.k);
+  return `<div class="tc-head"><span class="tc-title">Stempelkarte</span><span class="tc-meta">${shortDate(inf.k)} · KW ${isoWeek(d)}</span></div>
+    <div class="tc-cols"><span>Schicht</span><span>Kommen</span><span>Gehen</span><span>Dauer</span></div>
+    ${rows}
+    <div class="tc-foot"><div class="tc-total"><span class="l">Total</span><span class="t"${runAttr(inf.runFrom, inf.done)}>${fmtDur(inf.total)}</span><span class="unit">h</span></div>
+    <button class="btn-text" type="button" data-edit="${inf.k}"${S.loaded ? '' : ' disabled'}>Bearbeiten</button></div>`;
+}
+
+function isFutureMonth(y, m) { const n = new Date(); return y > n.getFullYear() || (y === n.getFullYear() && m > n.getMonth()); }
+
+function renderCal(now) {
+  const { y, m } = S.vm;
+  $('#calTitle').textContent = MON[m] + ' ' + y;
+  const lead = (new Date(y, m, 1).getDay() + 6) % 7;
+  const dim = new Date(y, m + 1, 0).getDate();
+  const cells = Math.ceil((lead + dim) / 7) * 7;
+  const todayK = workdayKey(now);
+  let html = '';
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(y, m, 1 - lead + i), k = keyOf(d), inf = info(k, now);
+    const future = k > todayK && !inf.st.length;
+    const cls = ['cal-day'];
+    if (d.getMonth() !== m) cls.push('other');
+    if (k === todayK) cls.push('today');
+    if (inf.total > 0) cls.push('worked');
+    if (inf.missing) cls.push('missing');
+    if (inf.manual) cls.push('manual');
+    const h = inf.total > 0 ? `<span class="h"${runAttr(inf.runFrom, inf.done)}>${fmtDur(inf.total)}</span>`
+            : inf.missing ? '<span class="h warn">?</span>' : '<span class="h"></span>';
+    const aria = longDate(k) + (inf.total > 0 ? ', ' + fmtDur(inf.total) + ' Stunden' : '') + (inf.missing ? ', Ausstempeln fehlt' : '');
+    html += `<button type="button" class="${cls.join(' ')}" data-day="${k}" aria-label="${aria}"${future ? ' disabled' : ''}><span class="n">${d.getDate()}</span>${h}</button>`;
+  }
+  $('#calGrid').innerHTML = html;
+  const ms = monthStats(y, m, now);
+  const base = ms.total - (ms.running ? now - ms.running.runFrom : 0);
+  $('#calSum').innerHTML = `<span>${MON[m]}: ${ms.worked.length} ${ms.worked.length === 1 ? 'Arbeitstag' : 'Arbeitstage'}</span><b><span${runAttr(ms.running && ms.running.runFrom, base)}>${fmtDur(ms.total)}</span> h</b>`;
+  $$('[data-mnav="1"]').forEach(b => { b.disabled = isFutureMonth(m === 11 ? y + 1 : y, (m + 1) % 12); });
+}
+
+function renderMonth(now) {
+  const { y, m } = S.vm, ms = monthStats(y, m, now);
+  $('#monTitle').textContent = MON[m] + ' ' + y;
+  $('#expCsvSub').textContent = 'Für Excel oder Numbers · ' + MON[m] + ' ' + y;
+  let html;
+  if (!ms.infos.length) {
+    html = `<div class="card empty-card"><b>Noch keine Stempel im ${MON[m]}.</b>Sobald du einstempelst, siehst du hier die Stunden pro Woche und jeden Tag mit Kommen und Gehen.</div>`;
+  } else {
+    const base = ms.total - (ms.running ? now - ms.running.runFrom : 0);
+    const lg = ms.longest;
+    html = `<div class="card hero">
+      <div class="l">Gearbeitet im ${MON[m]}</div>
+      <div class="big"><span class="t"${runAttr(ms.running && ms.running.runFrom, base)}>${fmtDur(ms.total)}</span><span class="unit">Stunden</span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="v">${ms.worked.length}</div><div class="l2">Arbeitstage</div></div>
+        <div class="kpi"><div class="v">${fmtDur(ms.avg)}</div><div class="l2">Ø pro Tag</div></div>
+        <div class="kpi"><div class="v">${lg ? fmtDur(lg.total) : '–'}</div><div class="l2">${lg ? 'Längster · ' + dateOf(lg.k).getDate() + '. ' + MON_S[m] : 'Längster Tag'}</div></div>
+      </div>
+      ${ms.missing.length ? `<button class="chip-warn" type="button" data-day="${ms.missing[0].k}">${ms.missing.length} ${ms.missing.length === 1 ? 'Tag' : 'Tage'} ohne Ausstempeln</button>` : ''}
+    </div>`;
+    const maxW = Math.max(42 * 3600000, ...ms.weeks.map(w => w.total));
+    html += `<h2>Wochen</h2><div class="card weeks">` + ms.weeks.map(w => {
+      const range = w.from === w.to ? `${w.from}. ${MON_S[m]}` : `${w.from}.–${w.to}. ${MON_S[m]}`;
+      return `<div class="wk"><div><b>KW ${w.kw}</b><small>${range}</small></div><div class="bar" role="img" aria-label="${fmtDur(w.total)} Stunden"><i style="width:${w.total ? Math.max(1, w.total / maxW * 100) : 0}%"></i></div><div class="v">${w.total ? fmtDur(w.total) : '<span class="muted">–</span>'}</div></div>`;
+    }).join('') + `</div>`;
+    html += `<h2>Tage</h2><div class="card days">` + ms.infos.slice().reverse().map(i => {
+      const d = dateOf(i.k);
+      const pairs = i.pairs.map(p => `<span class="dl-pair"><span class="t in">${hhmm(p.a.t)}</span><span class="sep">–</span>${p.b ? `<span class="t out">${hhmm(p.b.t)}</span>` : (i.runFrom === p.a.t ? '<span class="muted">läuft</span>' : '<span class="warn">fehlt</span>')}</span>`).join('');
+      const sub = [];
+      if (i.pause) sub.push('Zimmerstunde ' + fmtDur(i.pause));
+      if (i.manual) sub.push('✎ nachgetragen');
+      if (i.day.note) sub.push('Notiz: ' + esc(i.day.note.length > 60 ? i.day.note.slice(0, 60) + '…' : i.day.note));
+      return `<button class="dl" type="button" data-day="${i.k}"><span class="dl-date"><b>${d.getDate()}.</b><small>${WD[d.getDay()]}</small></span>`
+        + `<span><span class="dl-pairs">${pairs || '<span class="muted">keine Stempel</span>'}</span>${sub.length ? `<span class="dl-sub">${sub.join(' · ')}</span>` : ''}</span>`
+        + `<span class="dl-tot"${runAttr(i.runFrom, i.done)}>${fmtDur(i.total)}</span></button>`;
+    }).join('') + `</div>`;
+  }
+  $('#monBody').innerHTML = html;
+  $('#storeNote').textContent =
+    S.mode === 'cloud' ? 'Gespeichert in deinem Claude-Konto: Deine Stempel erscheinen auf jedem Gerät, auf dem du diese Seite öffnest. Nur du siehst sie, auch wenn du den Link teilst.'
+    : S.mode === 'local' ? 'Gespeichert nur auf diesem Gerät. Sichere einmal im Monat ein Backup – wenn du das App-Symbol löschst oder die Website-Daten leerst, sind die Stempel weg.'
+    : 'Verbinde mit deinem Speicher …';
+}
+
+function renderTabs() {
+  $$('.view').forEach(v => v.classList.toggle('on', v.dataset.view === S.tab));
+  $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === S.tab ? 'true' : 'false'));
+}
+
+function renderBanner() {
+  let msg = '';
+  if (S.mode === 'cloud') {
+    if (S.snapDead && S.cloudErr === 'revoked') msg = 'Der Zugriff auf deinen Speicher wurde beendet. Lade die Seite neu.';
+    else if (S.failed.size && S.cloudErr === 'invalid_argument') msg = 'Speichern abgelehnt: Mit diesem Konto kannst du hier nicht schreiben.';
+    else if (S.failed.size) msg = (S.failed.size === 1 ? '1 Tag ist' : S.failed.size + ' Tage sind') + ' noch nicht gespeichert (keine Verbindung). Wird automatisch erneut versucht.';
+  } else if (S.mode === 'local' && S.localWarn) {
+    msg = 'Dieser Browser speichert nicht dauerhaft (privates Fenster?). Stempel gehen beim Schliessen verloren – sichere ein Backup.';
+  }
+  $('#bannerWrap').hidden = !msg;
+  $('#banner').textContent = msg;
+}
+
+/* ---------- Tag bearbeiten ---------- */
+function sheetHasFocus() {
+  const a = document.activeElement;
+  return !!(a && $('#sheet').contains(a) && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'));
+}
+let lastFocus = null;
+function openSheet(k) {
+  if (!S.loaded || !KEY_RE.test(k)) return;
+  lastFocus = document.activeElement;
+  S.sheetKey = k;
+  $('#sheet').hidden = false; $('#backdrop').hidden = false; document.body.classList.add('locked');
+  renderSheet(Date.now(), true);
+  setTimeout(() => $('#sheetDone').focus({ preventScroll: true }), 30);
+}
+function closeSheet() {
+  if (!S.sheetKey) return;
+  flushNote();
+  S.sheetKey = null;
+  $('#sheet').hidden = true; $('#backdrop').hidden = true; document.body.classList.remove('locked');
+  if (lastFocus && lastFocus.focus) try { lastFocus.focus({ preventScroll: true }); } catch (e) {}
+}
+function renderSheet(now, withNote) {
+  const k = S.sheetKey, inf = info(k, now), d = dateOf(k);
+  $('#sheetEyebrow').textContent = 'KW ' + isoWeek(d) + (k === workdayKey(now) ? ' · Heute' : '');
+  $('#sheetTitle').textContent = longDate(k);
+  let html = inf.st.map((s, i) =>
+    `<div class="ed ${i % 2 ? 'out' : 'in'}"><label for="ed-${i}">${label(i)}${s.m ? '<small>nachgetragen</small>' : ''}</label>`
+    + `<input type="time" id="ed-${i}" data-t="${s.t}" value="${hhmm(s.t)}" required>`
+    + `<button type="button" class="del" data-del="${s.t}" aria-label="${label(i)} löschen">${TRASH}</button></div>`).join('');
+  if (!inf.st.length) html = '<p class="ed-empty">Keine Stempel an diesem Tag.</p>';
+  if (inf.missing) html += '<p class="ed-warn">Ausstempeln fehlt – trage die Endzeit nach.</p>';
+  $('#sheetList').innerHTML = html;
+  $('#addStamp').textContent = '+ ' + label(inf.st.length) + ' nachtragen';
+  if (withNote || document.activeElement !== $('#dayNote')) $('#dayNote').value = inf.day.note;
+  $('#sheetTotal').innerHTML = `<span>${inf.pause ? 'Zimmerstunde <b>' + fmtDur(inf.pause) + '</b>' : 'Stempel: <b>' + inf.st.length + '</b>'}</span><span>Total <b>${fmtDur(inf.total)} h</b></span>`;
+}
+$('#sheetList').addEventListener('change', e => {
+  const el = e.target;
+  if (!el.matches('input[type="time"]') || !el.value || !S.sheetKey) return;
+  const k = S.sheetKey, day = getDay(k), old = Number(el.dataset.t);
+  const idx = day.stamps.findIndex(s => s.t === old);
+  if (idx < 0 || hhmm(old) === el.value) return;
+  const t = msAt(k, el.value);
+  const stamps = day.stamps.map(s => ({ ...s }));
+  stamps[idx] = { t, m: 1 };
+  el.dataset.t = String(t);
+  putDay(k, { stamps, note: day.note });
+});
+$('#sheet').addEventListener('focusout', () => {
+  setTimeout(() => { if (S.sheetKey && !sheetHasFocus()) renderSheet(Date.now()); }, 0);
+});
+$('#sheetList').addEventListener('click', e => {
+  const b = e.target.closest('.del'); if (!b || !S.sheetKey) return;
+  if (!b.classList.contains('armed')) {
+    b.classList.add('armed'); b.textContent = 'Löschen';
+    setTimeout(() => { if (b.isConnected && b.classList.contains('armed')) { b.classList.remove('armed'); b.innerHTML = TRASH; } }, 3000);
+    return;
+  }
+  const k = S.sheetKey, day = getDay(k), t = Number(b.dataset.del);
+  const i = day.stamps.findIndex(s => s.t === t);
+  if (i < 0) return;
+  putDay(k, { stamps: day.stamps.filter((_, j) => j !== i), note: day.note });
+  toast('Stempel gelöscht');
+});
+$('#addStamp').addEventListener('click', () => {
+  const k = S.sheetKey; if (!k) return;
+  const now = Date.now(), day = getDay(k), st = day.stamps;
+  let t;
+  if (k === workdayKey(now)) t = Math.floor(now / 60000) * 60000;
+  else if (st.length) t = Math.min(st[st.length - 1].t + 3600000, msAt(k, '03:59'));
+  else t = msAt(k, '08:00');
+  if (t > now) t = Math.floor(now / 60000) * 60000;
+  putDay(k, { stamps: st.concat([{ t, m: 1 }]), note: day.note });
+  requestAnimationFrame(() => { const el = $(`#sheetList input[data-t="${t}"]`); if (el) el.scrollIntoView({ block: 'nearest' }); });
+});
+let noteTimer = null;
+function flushNote() {
+  clearTimeout(noteTimer);
+  const k = S.sheetKey; if (!k) return;
+  const v = $('#dayNote').value.slice(0, 2000), day = getDay(k);
+  if (v === day.note) return;
+  putDay(k, { stamps: day.stamps, note: v });
+}
+$('#dayNote').addEventListener('input', () => { clearTimeout(noteTimer); noteTimer = setTimeout(flushNote, 800); });
+$('#dayNote').addEventListener('blur', flushNote);
+$('#sheetDone').addEventListener('click', closeSheet);
+$('#backdrop').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.sheetKey) closeSheet(); });
+
+/* ---------- Stempeln ---------- */
+function inkRing(isOut) {
+  const r = document.createElement('span');
+  r.className = 'ink-ring';
+  r.style.setProperty('--c', isOut ? 'var(--out)' : 'var(--in)');
+  r.addEventListener('animationend', () => r.remove());
+  $('#stampWrap').appendChild(r);
+  setTimeout(() => r.remove(), 1200);
+}
+function doStamp(auto) {
+  if (!S.loaded) return;
+  const now = Date.now(), k = workdayKey(now), day = getDay(k), st = day.stamps, last = st[st.length - 1];
+  if (last && Math.abs(now - last.t) < 5000) { toast('Gerade eben gestempelt (' + hhmm(last.t) + ')'); return; }
+  const i = st.length;
+  S.fresh = now;
+  putDay(k, { stamps: st.concat([{ t: now }]), note: day.note });
+  inkRing(i % 2 === 1);
+  try { if (navigator.vibrate) navigator.vibrate(18); } catch (e) {}
+  toast((i % 2 ? 'Ausgestempelt ' : 'Eingestempelt ') + hhmm(now) + ' · ' + label(i), {
+    action: 'Rückgängig', ms: 8000,
+    fn: () => { const d = getDay(k); putDay(k, { stamps: d.stamps.filter(s => s.t !== now), note: d.note }); toast('Stempel entfernt'); }
+  });
+  requestPersist();
+  setTimeout(() => { if (S.fresh === now) S.fresh = null; }, 1500);
+}
+$('#stampBtn').addEventListener('click', () => doStamp(false));
+
+/* ---------- Navigation ---------- */
+function setTab(t) {
+  if (t === S.tab) return;
+  S.tab = t; renderTabs();
+  try { localStorage.setItem(LS_UI, JSON.stringify({ tab: t })); } catch (e) {}
+  if (!matchMedia('(min-width:900px)').matches) window.scrollTo(0, 0);
+}
+function shiftMonth(dir) {
+  let { y, m } = S.vm; m += dir;
+  if (m < 0) { m = 11; y--; } else if (m > 11) { m = 0; y++; }
+  if (isFutureMonth(y, m)) return;
+  S.vm = { y, m }; render();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-mnav],[data-day],[data-edit]');
+  if (!t || t.disabled) return;
+  if (t.dataset.tab) setTab(t.dataset.tab);
+  else if (t.dataset.mnav) shiftMonth(Number(t.dataset.mnav));
+  else openSheet(t.dataset.day || t.dataset.edit);
+});
+
+/* ---------- Toast ---------- */
+let toastTimer = null;
+function hideToast() { clearTimeout(toastTimer); $('#toast').hidden = true; }
+function toast(msg, opt = {}) {
+  const el = $('#toast');
+  el.textContent = '';
+  const s = document.createElement('span'); s.textContent = msg; el.appendChild(s);
+  if (opt.action) {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = opt.action;
+    b.addEventListener('click', () => { hideToast(); opt.fn(); });
+    el.appendChild(b);
+  }
+  el.hidden = false; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, opt.ms || 2800);
+}
+
+/* ---------- Export / Backup ---------- */
+function csvCell(v) { v = String(v); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function buildCsv(y, m, now) {
+  const ms = monthStats(y, m, now);
+  const maxP = Math.max(2, ...ms.infos.map(i => i.pairs.length));
+  const head = ['Datum', 'Wochentag'];
+  for (let p = 1; p <= maxP; p++) head.push('Start ' + p, 'Ende ' + p);
+  head.push('Zimmerstunde', 'Total (h:mm)', 'Total (Stunden)', 'Nachgetragen', 'Notiz');
+  const lines = [head.map(csvCell).join(';')];
+  for (const i of ms.infos) {
+    const d = dateOf(i.k);
+    const row = [pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(), WD_L[d.getDay()]];
+    for (let p = 0; p < maxP; p++) {
+      const pr = i.pairs[p];
+      row.push(pr ? hhmm(pr.a.t) : '', pr ? (pr.b ? hhmm(pr.b.t) : (i.runFrom === pr.a.t ? 'läuft' : 'fehlt')) : '');
+    }
+    row.push(i.pause ? fmtDur(i.pause) : '', fmtDur(i.total), decH(i.total), i.manual ? 'ja' : '', i.day.note);
+    lines.push(row.map(csvCell).join(';'));
+  }
+  const tot = ['Total', ''];
+  for (let p = 0; p < maxP; p++) tot.push('', '');
+  tot.push('', fmtDur(ms.total), decH(ms.total), '', '');
+  lines.push(tot.map(csvCell).join(';'));
+  return '﻿' + lines.join('\r\n') + '\r\n';
+}
+function inFrame() { try { return window.top !== window.self; } catch (e) { return true; } }
+function offerFile(filename, text, mime) {
+  if (S.dl) {
+    S.dl.save({ filename, data: text }).then(() => toast('Datei gespeichert'), e => {
+      if (e && e.code === 'declined') return;
+      toast('Speichern nicht möglich. Versuche es nochmals.');
+    });
+    return;
+  }
+  if (inFrame()) {                       // eingebettet ohne Download: in die Zwischenablage
+    const done = () => toast('Inhalt kopiert – in Notizen oder eine Datei einfügen');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => toast('Export hier nicht möglich'));
+    else toast('Export hier nicht möglich');
+    return;
+  }
+  const blob = new Blob([text], { type: mime });
+  let file = null; try { file = new File([blob], filename, { type: mime }); } catch (e) {}
+  if (file && matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: filename }).catch(err => { if (!err || err.name !== 'AbortError') linkDownload(blob, filename); });
+    return;
+  }
+  linkDownload(blob, filename);
+}
+function linkDownload(blob, filename) {
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 2000);
+}
+$('#expCsv').addEventListener('click', () => {
+  const { y, m } = S.vm;
+  offerFile(`Stempeluhr_${y}-${pad(m + 1)}.csv`, buildCsv(y, m, Date.now()), 'text/csv');
+});
+$('#expJson').addEventListener('click', () => {
+  const n = new Date();
+  offerFile(`Stempeluhr_Backup_${keyOf(n)}.json`, JSON.stringify({ app: 'stempeluhr', v: 1, exported: n.toISOString(), days: S.days }, null, 1), 'application/json');
+});
+$('#impJson').addEventListener('click', () => { if (S.loaded) $('#importFile').click(); });
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  let o; try { o = JSON.parse(await f.text()); } catch (err) { toast('Diese Datei ist kein Stempeluhr-Backup.'); return; }
+  const days = o && o.days;
+  if (!days || typeof days !== 'object') { toast('Diese Datei ist kein Stempeluhr-Backup.'); return; }
+  let n = 0;
+  for (const k of Object.keys(days).filter(k => KEY_RE.test(k)).sort()) {
+    const inc = norm(days[k]), cur = getDay(k);
+    const seen = new Set(cur.stamps.map(s => s.t));
+    const add = inc.stamps.filter(s => !seen.has(s.t));
+    const note = cur.note || inc.note;
+    if (add.length || note !== cur.note) { await putDay(k, { stamps: cur.stamps.concat(add), note }, { quiet: true }); n++; }
+  }
+  render();
+  toast(n ? n + (n === 1 ? ' Tag' : ' Tage') + ' aus dem Backup übernommen' : 'Nichts Neues im Backup');
+});
+
+/* ---------- Uhr ---------- */
+let lastKey = null;
+function tick() {
+  const now = Date.now(), d = new Date(now);
+  $('#clockHM').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  $('#clockS').textContent = ':' + pad(d.getSeconds());
+  for (const el of document.querySelectorAll('[data-run]')) {
+    const v = fmtDur(Number(el.dataset.base || 0) + now - Number(el.dataset.run));
+    if (el.textContent !== v) el.textContent = v;
+  }
+  const k = workdayKey(now) + '|' + keyOf(d);   // Arbeitstag oder Kalendertag gewechselt → neu zeichnen
+  if (k !== lastKey) { if (lastKey !== null) render(); lastKey = k; }
+  setTimeout(tick, 1000 - (now % 1000) + 5);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+
+init();
+})();
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body>
+</html>
